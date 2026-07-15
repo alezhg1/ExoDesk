@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плывущая Glassmorphism карточка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #020208;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            perspective: 1000px; /* Добавляет глубину для 3D-эффекта плавного наклона */
+        }
+
+        /* Медленно вращающийся и плывущий глубокий фон */
+        .background {
+            position: absolute;
+            width: 150vw;
+            height: 150vh;
+            top: -25vw;
+            left: -25vw;
+            background: radial-gradient(circle at 30% 30%, #130b2b 0%, #020208 60%);
+            z-index: 1;
+            animation: bgDrift 40s infinite linear;
+        }
+
+        /* Летающие сферы с хаотичным движением */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.6;
+            mix-blend-mode: screen;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: #4f46e5;
+            top: -10%;
+            left: -10%;
+            animation: floatOrb1 25s infinite ease-in-out alternate;
+        }
+
+        .orb-2 {
+            width: 700px;
+            height: 700px;
+            background: #7c3aed;
+            bottom: -20%;
+            right: -10%;
+            animation: floatOrb2 30s infinite ease-in-out alternate-reverse;
+        }
+
+        .orb-3 {
+            width: 500px;
+            height: 500px;
+            background: #db2777;
+            top: 30%;
+            left: 25%;
+            animation: floatOrb3 20s infinite ease-in-out alternate;
+        }
+
+        /* Карточка, которая полноценно плавает в пространстве (смещение + наклон) */
+        .card-container {
+            position: relative;
+            z-index: 10;
+            animation: floatContainer 8s infinite ease-in-out;
+        }
+
+        .card {
+            width: 380px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 
+                0 30px 60px -15px rgba(0, 0, 0, 0.8),
+                inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transform-style: preserve-3d;
+            animation: floatCard3D 12s infinite ease-in-out;
+        }
+
+        /* Мягкое живое свечение позади плывущей карточки */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: linear-gradient(135deg, #4f46e5, #db2777);
+            border-radius: 28px;
+            z-index: -1;
+            filter: blur(40px);
+            opacity: 0.25;
+            animation: pulseGlow 6s infinite ease-in-out;
+        }
+
+        /* Иконка с бесконечной левитацией */
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 28px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(219, 39, 119, 0.25));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: floatIcon 4s infinite ease-in-out;
+        }
+
+        .icon-box svg {
+            width: 34px;
+            height: 34px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.7;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+        }
+
+        /* --- СЕТКА АНИМАЦИЙ ДЛЯ ЭФФЕКТА ПЛАВАНИЯ --- */
+
+        /* Вращение дальнего фона */
+        @keyframes bgDrift {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Плавное покачивание контейнера вверх-вниз по синусоиде */
+        @keyframes floatContainer {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-25px); }
+        }
+
+        /* 3D наклон карточки из стороны в сторону во время плавания */
+        @keyframes floatCard3D {
+            0%, 100% { transform: rotateX(4deg) rotateY(-6deg) rotateZ(-1deg); }
+            50% { transform: rotateX(-5deg) rotateY(6deg) rotateZ(1deg); }
+        }
+
+        /* Независимое дыхание внутреннего свечения */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.2; filter: blur(35px); }
+            50% { opacity: 0.35; filter: blur(50px); }
+        }
+
+        /* Смещенная левитация иконки */
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.03); color: #db2777; }
+        }
+
+        /* Траектории движения жидких сфер фона */
+        @keyframes floatOrb1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(120px, 80px) scale(1.15); }
+        }
+
+        @keyframes floatOrb2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-100px, -120px) scale(0.9); }
+        }
+
+        @keyframes floatOrb3 {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(70px, -60px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="card-container">
+        <div class="card">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+            </div>
+            <h1>Невесомость</h1>
+            <p>Карточка теперь полноценно левитирует в пространстве, покачиваясь по трем осям координат и создавая глубокий 3D-эффект без капли JavaScript.</p>
+        </div>
+    </div>
+
+</body>
+</html>
